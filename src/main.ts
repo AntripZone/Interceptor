@@ -9,8 +9,8 @@ async function bootstrap() {
   configureApp(app);
 
   const config = new DocumentBuilder()
-    .setTitle('Clínica Integral API')
-    .setDescription('API de gestión de pacientes y médicos')
+    .setTitle('Orders API')
+    .setDescription('API de gestión de Ordenes')
     .setVersion('1.0')
     .addBearerAuth()
     .build();

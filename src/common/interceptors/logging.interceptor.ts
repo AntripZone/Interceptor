@@ -26,40 +26,36 @@ export class LoggingInterceptor implements NestInterceptor {
   private readonly logger = new Logger('HTTP');
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
-  //obtiene la petición http actual
-  const request = context.switchToHttp().getRequest<Request>();
+    //obtiene la petición http actual
+    const request = context.switchToHttp().getRequest<Request>();
 
-  //obtiene el método HTTP: GET, POST, etc
-  const method = request.method;
+    //obtiene el método HTTP: GET, POST, etc
+    const method = request.method;
 
-  //obtiene la url solicitada: /orders, /orders/1, etc
-  const url = request.originalUrl;
+    //obtiene la url solicitada: /orders, /orders/1, etc
+    const url = request.originalUrl;
 
-  //guarda el momento en que comienza la petición
-  const start = Date.now();
+    //guarda el momento en que comienza la petición
+    const start = Date.now();
 
-  return next.handle().pipe(
-    tap({
-      next: () => {
-        //calcula cuantos milisegundos tardó la petición
-        const ms = Date.now() - start;
+    return next.handle().pipe(
+      tap({
+        next: () => {
+          //calcula cuantos milisegundos tardó la petición
+          const ms = Date.now() - start;
 
-        //registra la petición exitosa
-        this.logger.log(`${method} ${url} ${ms}ms`);
-      },
+          //registra la petición exitosa
+          this.logger.log(`${method} ${url} ${ms}ms`);
+        },
 
-      error: (err) => {
-        //calcula cuántos milisegundos tardó la petición
-        const ms = Date.now() - start;
+        error: (err) => {
+          //calcula cuántos milisegundos tardó la petición
+          const ms = Date.now() - start;
 
-        //registra el error ocurrido durante la petición
-        this.logger.error(`${method} ${url} ${ms}ms - ${err.message}`);
-      },
-      
-    }),
-
-  );
-
-
+          //registra el error ocurrido durante la petición
+          this.logger.error(`${method} ${url} ${ms}ms - ${err.message}`);
+        },
+      }),
+    );
   }
 }
