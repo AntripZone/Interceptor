@@ -26,26 +26,40 @@ export class LoggingInterceptor implements NestInterceptor {
   private readonly logger = new Logger('HTTP');
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
-    // TODO [Estudiante 2] Paso 1: este código corre ANTES del controller.
-    //   Obtén `method` y `url` desde context.switchToHttp().getRequest<Request>()
-    //   y guarda el instante de inicio: const start = Date.now();
+  //obtiene la petición http actual
+  const request = context.switchToHttp().getRequest<Request>();
 
-    // TODO [Estudiante 2] Paso 2: el código dentro de tap() corre DESPUÉS del
-    //   controller, cuando ya hay respuesta:
-    //     next.handle().pipe(
-    //       tap({
-    //         next: () => this.logger.log(`${method} ${url} ${ms}ms`),
-    //         error: (err) => this.logger.error(`${method} ${url} ${ms}ms - ${err.message}`),
-    //       }),
-    //     )
-    //   donde ms = Date.now() - start.
-    //
-    // ⚠️ Usa this.logger (el Logger de Nest), NO console.log. Los tests lo verifican.
-    //
-    // Pregunta para pensar: si solo usas tap(() => ...), ¿qué pasa con las
-    // peticiones que terminan en error (404, 408)? ¿Se loguean?
+  //obtiene el método HTTP: GET, POST, etc
+  const method = request.method;
 
-    // ⬇️ Reemplaza esta línea por tu implementación.
-    return next.handle();
+  //obtiene la url solicitada: /orders, /orders/1, etc
+  const url = request.originalUrl;
+
+  //guarda el momento en que comienza la petición
+  const start = Date.now();
+
+  return next.handle().pipe(
+    tap({
+      next: () => {
+        //calcula cuantos milisegundos tardó la petición
+        const ms = Date.now() - start;
+
+        //registra la petición exitosa
+        this.logger.log(`${method} ${url} ${ms}ms`);
+      },
+
+      error: (err) => {
+        //calcula cuántos milisegundos tardó la petición
+        const ms = Date.now() - start;
+
+        //registra el error ocurrido durante la petición
+        this.logger.error(`${method} ${url} ${ms}ms - ${err.message}`);
+      },
+      
+    }),
+
+  );
+
+
   }
 }
