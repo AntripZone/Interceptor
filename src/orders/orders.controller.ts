@@ -14,11 +14,13 @@ import {
   ApiRequestTimeoutResponse,
   ApiOperation,
   ApiParam,
+  ApiTags,
 } from '@nestjs/swagger';
 import { CreateOrderDto } from './dto/create-order.dto.js';
 import { Order } from './entities/order.entity.js';
 import { OrdersService } from './orders.service.js';
 
+@ApiTags('orders')
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}

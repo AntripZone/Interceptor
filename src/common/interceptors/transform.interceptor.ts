@@ -51,6 +51,18 @@ export class TransformInterceptor<T> implements NestInterceptor<
     // DENTRO del map() y no antes?
 
     // ⬇️ Reemplaza esta línea por tu implementación.
-    return next.handle() as unknown as Observable<ApiResponse<T>>;
+    const http = context.switchToHttp();
+    const request = http.getRequest<Request>();
+    const response = http.getResponse<Response>();
+
+    return next.handle().pipe(
+      map((data) => ({
+        statusCode: response.statusCode,
+        timestamp: new Date().toISOString(),
+        path: request.url,
+        data,
+      })),
+    );
+    // El controller todavía puede cambiarlo, por ejemplo con @HttpCode() o con res.status()
   }
 }
